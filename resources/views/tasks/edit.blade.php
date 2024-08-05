@@ -8,6 +8,9 @@
         <form method="POST" action="{{route('tasks.edit_action')}}">
             @csrf
             <input type="hidden" name="id" value="{{$task->id}}">
+
+            <x-form.checkbox_input name="checkbox" name="is_done" label="Tarefa Realizada" checked="{{$task->is_done}}"/>
+            
             <x-form.text_input name="title" label="Título da task" required="required" placeholder="Digite o título da sua task" value="{{$task->title}}"/>
             <x-form.text_input name="due_date" type="datetime-local" label="Data da task" required="required" value="{{$task->due_date}}"/>
             <x-form.select_input name="category_id" label="Categoria da task">
