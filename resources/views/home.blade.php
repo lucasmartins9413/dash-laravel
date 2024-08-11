@@ -11,9 +11,9 @@
             <h2>Progresso do Dia</h2>
             <div class="graph_header-line"></div>
             <div class="graph_header-date">
-                <img src="/assets/images/icon-prev.png" alt="">
-                <date>13/12/2024</date>
-                <img src="/assets/images/icon-next.png" alt="">
+                <a href="{{route('home', ['date' => $date_prev_button])}}"><img src="/assets/images/icon-prev.png" alt=""></a>
+                <date><p>{{$date_as_string}}</p></date>
+                <a href="{{route('home', ['date' => $date_next_button])}}"><img src="/assets/images/icon-next.png" alt=""></a>
             </div>
         </div>
 
@@ -25,8 +25,10 @@
     </section>
     <section class="list">
         <div class="list_header">
-            <select name="" id="">
-                <option value="1">Todas as tarefas</option>
+            <select name="" id="" onChange="changeTaskStatusFilter(this)">
+                <option value="all_task">Todas as tarefas</option>
+                <option value="task_pending">Tarefas Pendentes</option>
+                <option value="task_done">Tarefas Realizadas</option>
             </select>
         </div>
 
@@ -39,4 +41,54 @@
 
         </div>
     </section>
+
+    <script>
+        function changeTaskStatusFilter(e){
+                
+            if(e.value == 'task_pending'){
+                showAllTasks();
+                document.querySelectorAll('.task_done').forEach(function(element){
+                    element.style.display = 'none';
+                })
+            }else if( e.value == 'task_done'){
+                showAllTasks()
+                document.querySelectorAll('.task_pending').forEach(function(element){
+                    element.style.display = 'none';
+                })
+            }else{
+                showAllTasks();
+            }
+        }
+
+
+        function showAllTasks(){
+            document.querySelectorAll('.task_single').forEach(function(element){
+                element.style.display = 'block';
+            })
+        }
+    </script>
+
+    <script>
+       async function taskUpdate(element) {
+            let status = element.checked;
+            let taskId = element.dataset.id;
+            let url = '{{ route('tasks.update') }}';
+
+            let rawResult = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'accept': "application/json"
+                },
+                body: JSON.stringify({ status, taskId, _token: '{{ csrf_token() }}' })
+            });
+
+            let result = await rawResult.json();
+            if(result.success){
+                alert('Task atualizada com sucesse');
+            }else{
+                element.checked = !status;
+            }
+        }
+    </script>
 </x-layout>
